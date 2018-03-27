@@ -1,15 +1,19 @@
 exports.config = {
-  generateCollection: true,
+  namespace: 'videoplayer',
+  generateDistribution: true,
   bundles: [
     { components: [
       'video-player',
-      'video-element',
       'play-button',
       'mute-button',
       'fullscreen-button',
       'scrub-bar',
       'volume-bar',
-      'time-label'
+      'time-label',
+      'control-bar',
+      'thumbnail-preview',
+      'subtitles-button',
+      'cues-box'
     ] }
   ]
 };

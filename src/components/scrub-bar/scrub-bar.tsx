@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter, Element, Listen } from '@stencil/core';
+import { Component, Prop, PropDidChange, Event, EventEmitter, Element, Listen, State } from '@stencil/core';
 
 @Component({
     tag: 'scrub-bar',
@@ -7,13 +7,20 @@ import { Component, Prop, Event, EventEmitter, Element, Listen } from '@stencil/
 export class ScrubBar {
     @Prop() progress: number;
     @Prop() duration: number;
+    @Prop() thumbnails: TextTrack;
 
-    @Event() seek: EventEmitter;
+    @Event() seekStart: EventEmitter;
+    @Event() seekMove: EventEmitter;
+    @Event() seekEnd: EventEmitter;
+
     @Element() element: HTMLElement;
 
     private scrubElement: HTMLElement;
-    private isDown:boolean = false;
-    
+    private isDown: boolean = false;
+
+    @State() valuetext: string = '0:00 of 0:00';
+    @State() thumbnailOptions: any;
+
     componentDidLoad() {
         this.scrubElement = this.element.querySelector('progress');
     }
@@ -29,59 +36,205 @@ export class ScrubBar {
     }
 
     @Listen('body:touchmove')
-    touchmoveHandler(event) {
-        this.handleMove(event);
+    bodytouchmoveHandler(event) {
+        this.handleBodyMove(event);
     }
 
     @Listen('body:mousemove')
-    mousemoveHandler(event) {
-        this.handleMove(event);
+    bodymousemoveHandler(event) {
+        this.handleBodyMove(event);
     }
 
     @Listen('body:touchend')
-    touchendHandler(event) {
+    bodytouchendHandler(event) {
         this.handleUp(event);
     }
 
     @Listen('body:mouseup')
-    mouseupHandler(event) {
+    bodymouseupHandler(event) {
         this.handleUp(event);
+    }
+
+    @Listen('mousemove')
+    mousemoveHandler(event) {
+        this.handleMove(event);
+    }
+
+    @Listen('mouseleave')
+    mouseleaveHandler() {
+        this.handleLeave();
     }
 
     handleDown(event) {
         this.isDown = true;
-        this.calculateSeek(event);
+        this.scrubToPosition(event, this.seekStart);
     }
 
-    handleMove(event) {
-        if (this.isDown) {
-            this.calculateSeek(event);
-        }
+    handleBodyMove(event) {
+        if (this.isDown) this.scrubToPosition(event, this.seekMove);
     }
 
     handleUp(event) {
         if (this.isDown) {
             this.isDown = false;
-            this.calculateSeek(event);
+            this.scrubToPosition(event, this.seekEnd);
         }
     }
-    
-    calculateSeek(event) {
+
+    handleMove(event) {
+        if (this.thumbnails) this.showThumbnail(event);
+    }
+
+    handleLeave() {
+        if (this.thumbnails) this.hideThumbnail();
+    }
+
+    scrubToPosition(event, emitter) {
+        // Find scrub position as a percentage
         let clientX = event.touches && event.touches[0] ? event.touches[0].clientX : event.clientX;
         if (!clientX) return;
         let controlPosition = this.scrubElement.getBoundingClientRect().left;
         let percent = (clientX - controlPosition) / this.scrubElement.offsetWidth;
         if (percent > 1) percent = 1;
         if (percent < 0) percent = 0;
-        this.seek.emit(percent);
+        // Convert percentage into time
+        const newTime = this.duration * percent;
+        emitter.emit(newTime);
+    }
+
+    calculateSeek(event) {
+        // Find scrub position as a percentage
+        let clientX = event.touches && event.touches[0] ? event.touches[0].clientX : event.clientX;
+        if (!clientX) return;
+        let controlPosition = this.scrubElement.getBoundingClientRect().left;
+        let percent = (clientX - controlPosition) / this.scrubElement.offsetWidth;
+        if (percent > 1) percent = 1;
+        if (percent < 0) percent = 0;
+        // Convert percentage into time
+        const newTime = this.duration * percent;
+        return newTime;
+    }
+
+    @Listen('keyup')
+    keyboardHandler(keyboardEvent: KeyboardEvent) {
+        let preventDefault = true;
+        switch (keyboardEvent.code) {
+            case 'ArrowLeft': {
+                this.arrowLeftHandler();
+                break;
+            }
+            case 'ArrowRight': {
+                this.arrowRightHandler();
+                break;
+            }
+            default: {
+                // If no keyboard event is to be handled, do not prevent default
+                preventDefault = false;
+            }
+        }
+        if (preventDefault) keyboardEvent.preventDefault();
+    }
+
+    arrowLeftHandler() {
+        let newTime = this.progress - 5; // go back 5 seconds
+        if (newTime < 0.001) newTime = 0.001;
+        this.seekMove.emit(newTime);
+    }
+
+    arrowRightHandler() {
+        let newTime = this.progress + 5; // go forwards 5 seconds
+        if (newTime > this.duration) newTime = this.duration;
+        this.seekMove.emit(newTime);
+    }
+
+    @PropDidChange('progress')
+    onProgressChangeHandler() {
+        this.setValueText();
+    }
+
+    @PropDidChange('duration')
+    onDurationChangeHandler() {
+        this.setValueText();
+    }
+
+    setValueText() {
+        if (this.progress !== undefined && this.duration !== undefined) {
+            this.valuetext = this.toHHMMSS(this.progress) + ' of ' + this.toHHMMSS(this.duration);
+        }
+    }
+
+    toHHMMSS(time) {
+        // Get total seconds
+        let numberInSeconds = parseInt(time, 10);
+        // Get hours
+        let hours: any = Math.floor(numberInSeconds / 3600);
+        // Get remaining minutes
+        let minutes: any = Math.floor((numberInSeconds - (hours * 3600)) / 60);
+        // Get remaining seconds
+        let seconds: any = numberInSeconds - (hours * 3600) - (minutes * 60);
+        // Add leading 0 to hours
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        // Add leading 0 to minutes
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        // Add leading 0 to seconds
+        if (seconds < 10) {
+            seconds = '0' + seconds;
+        }
+        // Return combined text string
+        return (hours !== '00' ? hours + ':' : '') + minutes + ':' + seconds;
+    }
+
+    showThumbnail(event) {
+        let position = this.calculateSeek(event);
+        const cues = this.thumbnails.cues;
+        let cueIndex = 0;
+        for (cueIndex = 0; cueIndex < cues.length; cueIndex++) {
+            if (cues[cueIndex].startTime <= position && cues[cueIndex].endTime > position) break;
+        }
+        if (cues[cueIndex]) {
+            const url = cues[cueIndex].text.split('#')[0];
+            const xywh = cues[cueIndex].text.substr(cues[cueIndex].text.indexOf('=') + 1).split(',');
+
+            let newPos = position / this.duration * this.element.clientWidth;
+            let lower = parseInt(xywh[2]) / 2;
+            let upper = this.element.clientWidth - lower;
+            if (newPos < lower) newPos = lower;
+            if (newPos > upper) newPos = upper;
+
+            this.thumbnailOptions = {
+                url: url,
+                x: xywh[0],
+                y: xywh[1],
+                w: xywh[2],
+                h: xywh[3],
+                position: newPos
+            };
+        }
+    }
+
+    hideThumbnail() {
+        this.thumbnailOptions = null;
     }
 
     render() {
-        return (
+        let objects = [
             <progress
                 max={this.duration}
                 value={this.progress || 0}
+                tabindex='0'
+                role='slider'
+                aria-label='Seek slider'
+                aria-valuemin='0'
+                aria-valuemax={this.duration}
+                aria-valuenow={this.progress}
+                aria-valuetext={this.valuetext}
             ></progress>
-        );
+        ];
+        if (this.thumbnails && this.thumbnailOptions) objects.unshift(<thumbnail-preview options={this.thumbnailOptions}></thumbnail-preview>);
+        return objects;
     }
 }

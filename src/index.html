@@ -4,20 +4,36 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Stencil Video Player</title>
-  <link rel="shortcut icon" href="https://cdn.glitch.com/7d3d6292-4790-447d-b41c-92834051e025%2Ffavicon.ico?1503061237364" type="image/x-icon">
-  <link rel="icon" href="https://cdn.glitch.com/7d3d6292-4790-447d-b41c-92834051e025%2Ffavicon.ico?1503061237364" type="image/x-icon">
-  <script src="promise.min.js"></script>
-  <script src="build/app.js"></script>
+  <script src="build/videoplayer.js"></script>
 </head>
 <style>
-  video-player {
-    width: 640px;
-    height: 360px;
+  body {
+    margin: 0;
+  }
+  .video-container {
+    max-width: 640px;
+    margin-bottom: 10px;
   }
 </style>
 <body>
 
-  <video-player url="the-emoji-movie-trailer.mp4"></video-player>
+  <div class="video-container">
+    <video-player>
+      <video poster="the-emoji-movie-trailer.png" webkit-playsinline playsinline>
+        <source src="the-emoji-movie-trailer.mp4" />
+        <track src="the-emoji-movie-trailer-subtitles-en.vtt" kind="subtitles" srclang="en" label="English" default />
+      </video>
+    </video-player>
+  </div>
+  
+  <div class="video-container">
+    <video-player>
+      <video poster="sintel.jpg" webkit-playsinline playsinline>
+        <source src="sintel.mp4" />
+        <track src="sintel-thumbs.vtt" kind="metadata" label="thumbnails" default />
+      </video>
+    </video-player>
+  </div>
 
 </body>
 </html>
