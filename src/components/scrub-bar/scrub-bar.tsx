@@ -1,4 +1,4 @@
-import { Component, Prop, PropDidChange, Event, EventEmitter, Element, Listen, State } from '@stencil/core';
+import { Component, h, Prop, Watch, Event, EventEmitter, Element, Listen, State } from '@stencil/core';
 
 @Component({
     tag: 'scrub-bar',
@@ -147,12 +147,12 @@ export class ScrubBar {
         this.seekMove.emit(newTime);
     }
 
-    @PropDidChange('progress')
+    @Watch('progress')
     onProgressChangeHandler() {
         this.setValueText();
     }
 
-    @PropDidChange('duration')
+    @Watch('duration')
     onDurationChangeHandler() {
         this.setValueText();
     }

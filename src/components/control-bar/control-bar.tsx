@@ -1,4 +1,4 @@
-import { Component, Prop, PropDidChange, Element } from '@stencil/core';
+import { Component, h, Prop, Watch, Element } from '@stencil/core';
 
 @Component({
     tag: 'control-bar',
@@ -12,7 +12,7 @@ export class ControlBar {
         this.element.style.opacity = '1';
     }
 
-    @PropDidChange('visible')
+    @Watch('visible')
     visibilityHandler(isVisible) {
         this.element.style.opacity = isVisible ? '1' : '0';
     }

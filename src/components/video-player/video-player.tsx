@@ -1,4 +1,4 @@
-import { Component, Listen, Element, State } from '@stencil/core';
+import { Component, h,  Listen, Element, State } from '@stencil/core';
 
 @Component({
     tag: 'video-player',

@@ -1,4 +1,4 @@
-import { Component, Prop, PropDidChange, State } from '@stencil/core';
+import { Component, h, Prop, Watch, State } from '@stencil/core';
 
 @Component({
     tag: 'cues-box',
@@ -9,7 +9,7 @@ export class CuesBox {
     @Prop() cues: any;
     @State() cue: string;
 
-    @PropDidChange('cues')
+    @Watch('cues')
     onCuesSet() {
         for (let cue of this.cues.cues) {
             cue.onenter = (e) => this.cueEnter(e);

@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Stencil Video Player</title>
-  <script src="build/videoplayer.js"></script>
+  <script type="module" src="/build/videoplayer.esm.js"></script>
+  <script nomodule src="/build/videoplayer.js"></script>
 </head>
 <style>
   body {
@@ -19,18 +20,18 @@
 
   <div class="video-container">
     <video-player>
-      <video poster="the-emoji-movie-trailer.png" webkit-playsinline playsinline>
-        <source src="the-emoji-movie-trailer.mp4" />
-        <track src="the-emoji-movie-trailer-subtitles-en.vtt" kind="subtitles" srclang="en" label="English" default />
+      <video poster="assets/the-emoji-movie-trailer.png" webkit-playsinline playsinline>
+        <source src="assets/the-emoji-movie-trailer.mp4" />
+        <track src="assets/the-emoji-movie-trailer-subtitles-en.vtt" kind="subtitles" srclang="en" label="English" default />
       </video>
     </video-player>
   </div>
   
   <div class="video-container">
     <video-player>
-      <video poster="sintel.jpg" webkit-playsinline playsinline>
-        <source src="sintel.mp4" />
-        <track src="sintel-thumbs.vtt" kind="metadata" label="thumbnails" default />
+      <video poster="assets/sintel.jpg" webkit-playsinline playsinline>
+        <source src="assets/sintel.mp4" />
+        <track src="assets/sintel-thumbs.vtt" kind="metadata" label="thumbnails" default />
       </video>
     </video-player>
   </div>

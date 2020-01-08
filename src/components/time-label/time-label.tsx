@@ -1,4 +1,4 @@
-import { Component, State, Prop, PropDidChange } from '@stencil/core';
+import { Component, h, State, Prop, Watch } from '@stencil/core';
 
 @Component({
     tag: 'time-label',
@@ -11,7 +11,7 @@ export class TimeLabel {
 
     @Prop() time: number;
 
-    @PropDidChange('time')
+    @Watch('time')
     didChangeHandler(time: number) {
         const hours = Math.floor(time / 3600);
         const minutes = Math.floor((time % 3600) / 60);

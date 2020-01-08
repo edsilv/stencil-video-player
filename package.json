@@ -3,30 +3,27 @@
   "private": true,
   "version": "0.0.1",
   "description": "Stencil Video Player",
-  "main": "dist/collection/index.js",
-  "types": "dist/collection/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "es2015": "dist/esm/index.mjs",
+  "es2017": "dist/esm/index.mjs",
+  "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
+  "collection:main": "dist/collection/index.js",
+  "unpkg": "dist/stencil-video-player/stencil-video-player.js",
   "files": [
-    "dist/"
+    "dist/",
+    "loader/"
   ],
-  "browser": "dist/videoplayer.js",
   "scripts": {
-    "build": "stencil build",
-    "dev": "sd concurrent \"stencil build --dev --watch\" \"stencil-dev-server\" ",
-    "serve": "stencil-dev-server",
-    "start": "npm run dev",
-    "test": "jest --no-cache"
-  },
-  "dependencies": {
-    "@stencil/core": "next",
-    "@stencil/router": "latest",
-    "express": "^4.16.1"
+    "build": "stencil build --docs",
+    "start": "stencil build --dev --watch --serve",
+    "test": "stencil test --spec --e2e",
+    "test.watch": "stencil test --spec --e2e --watchAll",
+    "generate": "stencil generate"
   },
   "devDependencies": {
-    "@stencil/dev-server": "latest",
-    "@stencil/utils": "latest",
-    "@types/jest": "^21.1.1",
-    "jest": "^21.2.1"
+    "@stencil/core": "1.8.4"
   },
   "repository": {
     "type": "git",
@@ -37,18 +34,5 @@
   "bugs": {
     "url": "https://github.com/CookieCookson/stencil-video-player"
   },
-  "homepage": "https://github.com/CookieCookson/stencil-video-player",
-  "jest": {
-    "transform": {
-      "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/@stencil/core/testing/jest.preprocessor.js"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ]
-  }
+  "homepage": "https://github.com/CookieCookson/stencil-video-player"
 }

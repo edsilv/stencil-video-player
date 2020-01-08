@@ -1,4 +1,4 @@
-import { Component, Prop, PropDidChange, Event, EventEmitter, Element, Listen } from '@stencil/core';
+import { Component, h, Prop, Watch, Event, EventEmitter, Element, Listen } from '@stencil/core';
 
 @Component({
     tag: 'volume-bar',
@@ -108,7 +108,7 @@ export class VolumeBar {
         this.volume.emit(newVolume);
     }
 
-    @PropDidChange('level')
+    @Watch('level')
     onLevelChange() {
         this.valuetext = (this.level * 100).toFixed(0) + '% volume';
     }

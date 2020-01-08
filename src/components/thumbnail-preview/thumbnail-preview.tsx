@@ -1,4 +1,4 @@
-import { Component, Prop, PropDidChange, Element } from '@stencil/core';
+import { Component, h, Prop, Watch, Element } from '@stencil/core';
 
 @Component({
     tag: 'thumbnail-preview',
@@ -9,7 +9,7 @@ export class ThumbnailPreview {
 
     @Element() element;
 
-    @PropDidChange('options')
+    @Watch('options')
     optionsHandler() {
         this.element.style.backgroundImage = 'url(' + this.options.url + ')';
         this.element.style.backgroundPosition = '-' + this.options.x + 'px -' + this.options.y + 'px';

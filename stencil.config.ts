@@ -1,6 +1,20 @@
-exports.config = {
+import { Config } from '@stencil/core';
+
+export const config: Config = {
   namespace: 'videoplayer',
-  generateDistribution: true,
+  outputTargets: [
+    {
+      type: 'dist',
+      esmLoaderPath: '../loader'
+    },
+    {
+      type: 'docs-readme'
+    },
+    {
+      type: 'www',
+      serviceWorker: null // disable service workers
+    }
+  ],
   bundles: [
     { components: [
       'video-player',
@@ -18,7 +32,3 @@ exports.config = {
   ]
 };
 
-exports.devServer = {
-  root: 'www',
-  watchGlob: '**/**'
-}
